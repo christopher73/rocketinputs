@@ -109,7 +109,7 @@ export const LoginPage = () => {
               </LinkTo>
             </Grid>
             <Grid item className={classes.bottomText}>
-              <LinkTo to="/">Forgot password?</LinkTo>
+              <LinkTo to="/dashboard">Forgot password?</LinkTo>
             </Grid>
           </Grid>
         </form>
