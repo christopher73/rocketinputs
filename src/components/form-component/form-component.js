@@ -12,11 +12,32 @@ import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { Container } from "@material-ui/core";
+import Modal from "@material-ui/core/Modal";
+import Backdrop from "@material-ui/core/Backdrop";
+import Button from "@material-ui/core/Button";
+
+import { useSpring, animated } from "react-spring/web.cjs"; // web.cjs is required for IE 11 support
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
-    flexWrap: "wrap",
+    // backgroundColor: "red",
+  },
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+
+    backgroundColor: theme.palette.background.paper,
+    // border: "2px solid #000",
+    // boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
   },
   margin: {
     margin: theme.spacing(1),
@@ -27,227 +48,124 @@ const useStyles = makeStyles((theme) => ({
   textField: {
     width: "25ch",
   },
+  button: {
+    margin: theme.spacing(2),
+  },
 }));
+const Fade = React.forwardRef(function Fade(props, ref) {
+  const { in: open, children, onEnter, onExited, ...other } = props;
+  const style = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: open ? 1 : 0 },
+    onStart: () => {
+      if (open && onEnter) {
+        onEnter();
+      }
+    },
+    onRest: () => {
+      if (!open && onExited) {
+        onExited();
+      }
+    },
+  });
 
-export const FormComponent = () => {
+  return (
+    <animated.div ref={ref} style={style} {...other}>
+      {children}
+    </animated.div>
+  );
+});
+const InputField = (props) => {
   const classes = useStyles();
+  return (
+    <FormControl
+      className={clsx(classes.margin, classes.textField)}
+      variant="filled"
+    >
+      <InputLabel htmlFor={props.htmlFor}>{props.label}</InputLabel>
+      <FilledInput id={props.htmlFor} type="text" {...props} />
+    </FormControl>
+  );
+};
+
+export const FormComponent = ({ open, setOpen }) => {
+  const classes = useStyles();
+  // const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const [values, setValues] = React.useState({
-    amount: "",
-    password: "",
-    weight: "",
-    weightRange: "",
-    showPassword: false,
+    firstName: "",
   });
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
   };
 
-  const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
-  };
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
   return (
-    <div className={classes.root}>
-      <div>
-        <TextField
-          label="With normal TextField"
-          id="standard-start-adornment"
-          className={clsx(classes.margin, classes.textField)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">Kg</InputAdornment>
-            ),
-          }}
-        />
-        <FormControl
-          className={clsx(
-            classes.margin,
-            classes.withoutLabel,
-            classes.textField
-          )}
-        >
-          <Input
-            id="standard-adornment-weight"
-            value={values.weight}
-            onChange={handleChange("weight")}
-            endAdornment={<InputAdornment position="end">Kg</InputAdornment>}
-            aria-describedby="standard-weight-helper-text"
-            inputProps={{
-              "aria-label": "weight",
-            }}
-          />
-          <FormHelperText id="standard-weight-helper-text">
-            Weight
-          </FormHelperText>
-        </FormControl>
-        <FormControl className={clsx(classes.margin, classes.textField)}>
-          <InputLabel htmlFor="standard-adornment-password">
-            Password
-          </InputLabel>
-          <Input
-            id="standard-adornment-password"
-            type={values.showPassword ? "text" : "password"}
-            value={values.password}
-            onChange={handleChange("password")}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                >
-                  {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-        <FormControl fullWidth className={classes.margin}>
-          <InputLabel htmlFor="standard-adornment-amount">Amount</InputLabel>
-          <Input
-            id="standard-adornment-amount"
-            value={values.amount}
-            onChange={handleChange("amount")}
-            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-          />
-        </FormControl>
-      </div>
-      <div>
-        <TextField
-          label="With normal TextField"
-          id="filled-start-adornment"
-          className={clsx(classes.margin, classes.textField)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">Kg</InputAdornment>
-            ),
-          }}
-          variant="filled"
-        />
-        <FormControl
-          className={clsx(classes.margin, classes.textField)}
-          variant="filled"
-        >
-          <FilledInput
-            id="filled-adornment-weight"
-            value={values.weight}
-            onChange={handleChange("weight")}
-            endAdornment={<InputAdornment position="end">Kg</InputAdornment>}
-            aria-describedby="filled-weight-helper-text"
-            inputProps={{
-              "aria-label": "weight",
-            }}
-          />
-          <FormHelperText id="filled-weight-helper-text">Weight</FormHelperText>
-        </FormControl>
-        <FormControl
-          className={clsx(classes.margin, classes.textField)}
-          variant="filled"
-        >
-          <InputLabel htmlFor="filled-adornment-password">Password</InputLabel>
-          <FilledInput
-            id="filled-adornment-password"
-            type={values.showPassword ? "text" : "password"}
-            value={values.password}
-            onChange={handleChange("password")}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-        </FormControl>
-        <FormControl fullWidth className={classes.margin} variant="filled">
-          <InputLabel htmlFor="filled-adornment-amount">Amount</InputLabel>
-          <FilledInput
-            id="filled-adornment-amount"
-            value={values.amount}
-            onChange={handleChange("amount")}
-            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-          />
-        </FormControl>
-      </div>
-      <div>
-        <TextField
-          label="With normal TextField"
-          id="outlined-start-adornment"
-          className={clsx(classes.margin, classes.textField)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">Kg</InputAdornment>
-            ),
-          }}
-          variant="outlined"
-        />
-        <FormControl
-          className={clsx(classes.margin, classes.textField)}
-          variant="outlined"
-        >
-          <OutlinedInput
-            id="outlined-adornment-weight"
-            value={values.weight}
-            onChange={handleChange("weight")}
-            endAdornment={<InputAdornment position="end">Kg</InputAdornment>}
-            aria-describedby="outlined-weight-helper-text"
-            inputProps={{
-              "aria-label": "weight",
-            }}
-            labelWidth={0}
-          />
-          <FormHelperText id="outlined-weight-helper-text">
-            Weight
-          </FormHelperText>
-        </FormControl>
-        <FormControl
-          className={clsx(classes.margin, classes.textField)}
-          variant="outlined"
-        >
-          <InputLabel htmlFor="outlined-adornment-password">
-            Password
-          </InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={values.showPassword ? "text" : "password"}
-            value={values.password}
-            onChange={handleChange("password")}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
-            labelWidth={70}
-          />
-        </FormControl>
-        <FormControl fullWidth className={classes.margin} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-amount"
-            value={values.amount}
-            onChange={handleChange("amount")}
-            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-            labelWidth={60}
-          />
-        </FormControl>
-      </div>
+    <div>
+      <Modal
+        aria-labelledby="spring-modal-title"
+        aria-describedby="spring-modal-description"
+        className={classes.modal}
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <Container className={classes.container}>
+            <InputField
+              htmlFor="firstName"
+              label="First Name"
+              onChange={handleChange("firstName")}
+              value={values.firstName}
+            />
+            <InputField
+              htmlFor="lastName"
+              label="Last Name"
+              onChange={handleChange("firstName")}
+              value={values.firstName}
+            />
+            <InputField
+              htmlFor="nickname"
+              label="Nickname"
+              onChange={handleChange("firstName")}
+              value={values.firstName}
+            />
+            <InputField
+              htmlFor="phone1"
+              label="Phone 1"
+              onChange={handleChange("firstName")}
+              value={values.firstName}
+            />
+            <InputField
+              htmlFor="phone2"
+              label="Phone 2"
+              onChange={handleChange("firstName")}
+              value={values.firstName}
+            />
+            <InputField
+              htmlFor="email"
+              label="Email"
+              onChange={handleChange("firstName")}
+              value={values.firstName}
+            />
+            <Button
+              className={classes.button}
+              variant="contained"
+              color="primary"
+            >
+              Submit
+            </Button>
+          </Container>
+        </Fade>
+      </Modal>
     </div>
   );
 };
