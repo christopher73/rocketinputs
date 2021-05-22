@@ -1,5 +1,8 @@
-export * from "./auth-background/auth-background-component";
-export * from "./responsive-drawer/responsive-drawer";
-export * from "./tab-container/tab-container";
-export * from "./table-component/table-component";
-export * from "./form-component/form-component";
+export * from "./responsive-drawer/ResponsiveDrawer";
+export * from "./menu-container/MenuContainer";
+export * from "./contact-component/ContactForm";
+export * from "./contact-component/Contacts";
+export * from "./user-component/Login";
+export * from "./user-component/ForgotPassword";
+export * from "./user-component/UserRegister";
+

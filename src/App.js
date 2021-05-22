@@ -1,40 +1,35 @@
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import React, {useContext} from 'react'
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import {
   DashboardPage,
   LoginPage,
   RegisterPage,
+  ForgotPasswordPage,
   PrivateRoutePage,
+  ContactAccountPage,
+  ContactLeadPage,
+  ContactNonePage
 } from "./pages";
 
-// Check for token to keep user logged in
-// if (localStorage.jwtToken) {
-//   // Set auth token header auth
-//   const token = localStorage.jwtToken;
-//   setAuthToken(token);
-//   // Decode token and get user info and exp
-//   const decoded = jwt_decode(token);
-//   // Set user and isAuthenticated
-//   store.dispatch(setCurrentUser(decoded));
-//   // Check for expired token
-//   const currentTime = Date.now() / 1000; // to get in milliseconds
-//   if (decoded.exp < currentTime) {
-//     // Logout user
-//     store.dispatch(logoutUser());
-//     // Redirect to login
-//     window.location.href = "./login";
-//   }
-// }
+import { RocketContext, RocketProvider } from './context/rocket'
+
 function App() {
+  const [ auth, saveAuth ] = useContext(RocketContext);
   return (
     <Router>
-      {/* A <Switch> looks through its children <Route>s and
-        renders the first one that matches the current URL. */}
-      <Route exact path="/" component={LoginPage} />
-      <Route exact path="/register" component={RegisterPage} />
-      <Switch>
-        <PrivateRoutePage exact path="/dashboard" component={DashboardPage} />
-      </Switch>
+        <RocketProvider value={[ auth, saveAuth ]}>
+        <Switch>
+          <Route exact path="/" render={props => (<LoginPage {...props} />)} />
+          <Route exact path="/register" render={props => (<RegisterPage {...props} />)} />
+          <Route exact path="/forgot-password" render={props => (<ForgotPasswordPage {...props} />)} />
+          <PrivateRoutePage exact path="/dashboard" component={props => (<DashboardPage {...props} />)} /> 
+          <PrivateRoutePage exact path="/contact-account" component={props => (<ContactAccountPage {...props} />)} /> 
+          <PrivateRoutePage exact path="/contact-lead" component={props => (<ContactLeadPage {...props} />)} /> 
+          <PrivateRoutePage exact path="/contact-none" component={props => (<ContactNonePage {...props} />)} /> 
+        </Switch>
+      </RocketProvider>
     </Router>
+    
   );
 }
 

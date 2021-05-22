@@ -1,10 +1,12 @@
 import React from "react";
-import { ResponsiveDrawer, TabContainer } from "../../components";
+import { ResponsiveDrawer } from "../../components";
+import MenuContainer from '../../components/menu-container/MenuContainer';
 
 export const DashboardPage = () => {
+
   return (
     <ResponsiveDrawer>
-      <TabContainer />
+      <MenuContainer item="0" />
     </ResponsiveDrawer>
   );
 };

@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Route, Redirect } from "react-router-dom";
+import { RocketContext } from '../../context/rocket';
+
 export const PrivateRoutePage = ({ component: Component, ...rest }) => {
-  //for now
-  let auth = { isAuthenticated: true };
+
+  const [auth ] = useContext( RocketContext );
 
   return (
     <Route
       {...rest}
       render={(props) =>
-        auth.isAuthenticated === true ? (
+        auth.token.length > 0 ? (
           <Component {...props} />
         ) : (
           <Redirect to="/" />
